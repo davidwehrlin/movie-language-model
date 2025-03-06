@@ -11,33 +11,31 @@ class Standardizer:
     Standardizes movie data to a consistent format.
     """
     @staticmethod
-    def standardize_movie_script( lines: List[str]) -> List[str]:
-        processed_lines = []
+    def standardize_movie_script(lines: List[str]) -> List[str]:
         for i in range(len(lines)):
-            lines[i] = lines[i].strip()
-
             prev_line = lines[i - 1] if i > 0 else ""
             current_line = lines[i]
-            next_line = lines[i + 1].strip() if i < len(lines) - 1 else ""
+            next_line = lines[i + 1] if i < len(lines) - 1 else ""
 
             if Standardizer.has_invalid_character(current_line):
                 raise ValueError(f"Invalid character in script")
             
+            current_line = Standardizer.remove_dates(current_line)
             current_line = Standardizer.remove_page_numbers(current_line)
             current_line = Standardizer.remove_special_script_strings(current_line)
             current_line = Standardizer.remove_line_with_only_special_chars(current_line)
             current_line = Standardizer.remove_empty_parentheses(current_line)
+            current_line = current_line.strip()
 
-            if prev_line == "" and current_line == "" and next_line == "":
-                continue
-            lines[i] = current_line.strip()
-        return processed_lines
+            lines[i] = current_line
+        return lines
 
     @staticmethod
     def has_invalid_character(line: str) -> bool:
-        pattern = re.compile(r'[^a-zA-Z0-9`!@#$%^&*()_+|\-=\\{}\[\]:"";\'<>?,./]')
-        if pattern.search(line):
-            return True
+        for char in line:
+            if char not in ''.join(chr(i) for i in range(256)):
+                print(f"==={ord(char)}===")
+                return True
         return False
     
     
@@ -66,8 +64,8 @@ class Standardizer:
     @staticmethod
     def remove_page_numbers(line: str) -> str:
         # Remove page numbers from the beginning and end of the line
-        line = re.sub(r'^(Page \d+ of \d+|\(?\d+[A-Z]?\)?\.?-?\)?\.?)\s*', '', line)  # Remove leading page numbers
-        line = re.sub(r'\s*(Page \d+ of \d+|\(?\d+[A-Z]?\)?\.?-?\)?\.?)$', '', line)  # Remove trailing page numbers
+        line = re.sub(r'^(Page \d+ of \d+|\(?\d+[A-Z]?\)?\.?-?\)?\.?)\s{2,}', '', line)  # Remove leading page numbers
+        line = re.sub(r'\s{2,}(Page \d+ of \d+|\(?\d+[A-Z]?\)?\.?-?\)?\.?)$', '', line)  # Remove trailing page numbers
         return line
 
     @staticmethod
@@ -87,5 +85,30 @@ class Standardizer:
         return line if not pattern.match(line) else ""
     
     @staticmethod
-    def remove_empty_parentheses(s):
-        return re.sub(r"\(\s*\)", "", s)
+    def remove_empty_parentheses(line:str) -> str:
+        return re.sub(r"\(\s*\)", "", line)
+    
+    @staticmethod
+    def remove_dates(line: str) -> str:
+        # Define regex patterns for different date formats
+        date_patterns = [
+            r'\b\d{2}/\d{2}/\d{2}\b',  # mm/dd/yy
+            r'\b\d{2}/\d{2}/\d{4}\b',  # mm/dd/yyyy
+            r'\b\d{2}/\d{2}/\d{2}\b',  # dd/mm/yy
+            r'\b\d{2}\.\d{2}\.\d{2}\b',  # mm.dd.yy
+            r'\b\d{2}\.\d{2}\.\d{4}\b',  # mm.dd.yyyy
+            r'\b\d{2}\.\d{2}\.\d{2}\b',  # dd.mm.yy
+            r'\b\d{2}-\d{2}-\d{2}\b',  # mm-dd-yy
+            r'\b\d{2}-\d{2}-\d{4}\b',  # mm-dd-yyyy
+            r'\b\d{2}-\d{2}-\d{2}\b'   # dd-mm-yy
+        ]
+        
+        # Remove dates from the beginning of the line
+        for pattern in date_patterns:
+            line = re.sub(r'^' + pattern + r'\s{2,}', '', line)
+        
+        # Remove dates from the end of the line
+        for pattern in date_patterns:
+            line = re.sub(r'\s{2,}' + pattern + r'$', '', line)
+        
+        return line.strip()

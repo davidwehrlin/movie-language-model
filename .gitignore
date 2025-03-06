@@ -169,3 +169,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Any raw or processed file should not be checke into version control I will zip them at the end
+data/raw/*.txt
+data/processed/*.txt

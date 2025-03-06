@@ -24,11 +24,3 @@ class MovieParser:
          if len(text_lines) < 200:
              raise ValueError("Script content is too short to be valid.")
          return text_lines
-    
-    @staticmethod
-    def standardize_script(script_lines):
-        standardized_lines = []
-        for line in script_lines:
-            if line.strip() and not line.startswith('INT.') and not line.startswith('EXT.'):
-                standardized_lines.append(line.strip())
-        return standardized_lines

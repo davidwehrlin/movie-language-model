@@ -1,10 +1,10 @@
+import random
 import requests
 from bs4 import BeautifulSoup
 
+from standardizer import Standardizer
 from parser import MovieParser
 from utils import ScraperUtils, DataState
-
-EXCLUDED_SCRIPTS = ["A.I.", "Batman-Begins", "Batman-Forever", ]
 
 class MovieScraper:
     def __init__(self, base_url):
@@ -21,14 +21,15 @@ class MovieScraper:
     def scrape_scripts(self):
         html = self.fetch_page(self.base_url)
         script_links = MovieParser.parse_script_links(html)
+        # script_links = random.choice(list(script_links.values()[10]))
         errors = []
-        for script_name, link in sorted(script_links.items())[:15]:
+        for script_name, link in sorted(script_links.items())[:10]:
             try:
                 script_html = self.fetch_page(link)
                 if script_html is None: continue
                 parsed_script = MovieParser.parse_script_content(script_html)
                 ScraperUtils.write_list_to_file(script_name, parsed_script, data_state=DataState.RAW)
-                standard_script = MovieParser.standardize_script(parsed_script)
+                standard_script = Standardizer.standardize_movie_script(parsed_script)
                 ScraperUtils.write_list_to_file(script_name, standard_script, data_state=DataState.PROCESSED)
             except Exception as e:
                 errors.append((script_name, str(e)))
