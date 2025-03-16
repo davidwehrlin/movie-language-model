@@ -21,9 +21,10 @@ class MovieScraper:
     def scrape_scripts(self):
         html = self.fetch_page(self.base_url)
         script_links = MovieParser.parse_script_links(html)
-        # script_links = random.choice(list(script_links.values()[10]))
+        print(f"Found {len(script_links)} scripts.")
+        # script_links = {"American-Beauty":"https://imsdb.com/scripts/American-Beauty.html"}
         errors = []
-        for script_name, link in sorted(script_links.items())[:10]:
+        for script_name, link in sorted(script_links.items()):
             try:
                 script_html = self.fetch_page(link)
                 if script_html is None: continue
@@ -36,7 +37,7 @@ class MovieScraper:
         if errors:
             print("Errors occurred while processing the following scripts:")
             for script_name, error in errors:
-                print(f"\"{script_name}\" -> {error}")
+                print(f"\"{script_name}\" \n\t-> {error}")
         return
     
 def main():

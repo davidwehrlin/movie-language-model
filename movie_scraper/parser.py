@@ -11,7 +11,10 @@ class MovieParser:
         for a_tag in soup.find_all('a', href=True):
             href_text = a_tag['href']
             if 'Movie Scripts' in href_text:
-                script_name = href_text.split('/')[-1].replace(' ', '-').replace("-Script.html", "")
+                script_name = href_text.split('/')[-1] \
+                    .replace(':', '') \
+                    .replace(' ', '-') \
+                    .replace("-Script.html", "")
                 links[script_name] = f'https://imsdb.com/scripts/{script_name}.html'  
         return links
 

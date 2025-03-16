@@ -16,9 +16,9 @@ class ScraperUtils:
         
         file_path = os.path.join(directory, f"{script_name}.txt")
         if os.path.exists(file_path) and data_state == DataState.RAW:
-            print(f"File {file_path} already exists. Skipping.")
             return
         
         with open(file_path, 'w') as file:
             for line in script_lines:
                 file.write(line + '\n')
+        print(f"File written: {file_path}")
