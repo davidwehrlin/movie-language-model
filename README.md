@@ -1,6 +1,6 @@
 # Movie Language Model
 > This project first scrapes movie scripts from the web and then uses that data in training for a language model which creates movies.
-
+This repo uses the Base Llama-3.2-1B Model and fine tunes the model to the movie scripts that have been scraped.
 
 ## Installation
 
