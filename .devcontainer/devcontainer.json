@@ -2,7 +2,7 @@
     "name": "Movie-Language-Model",
   
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    "image": "quay.io/jupyter/base-notebook:python-3.12",
+    "image": "quay.io/jupyter/pytorch-notebook:cuda12-python-3.12",
   
     // Features to add to the dev container. More info: https://containers.dev/features.
     "features": {
@@ -26,6 +26,6 @@
 
     "forwardPorts": [8888, 8889],
     "postCreateCommand": "pip install -r requirements.txt",
-    "runArgs": [ "--rm", "-p", "8889:8888"]
+    "runArgs": ["--runtime=nvidia", "--gpus", "all"]
   }
   

@@ -173,3 +173,7 @@ cython_debug/
 # Any raw or processed file should not be checke into version control I will zip them at the end
 data/**/*.txt
 data/refined.zip
+
+
+# any secrets 
+secrets.json
